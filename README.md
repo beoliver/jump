@@ -5,8 +5,16 @@ TelePort around your filesystem
 # Example
 
 ```sh
+$ tp --help
+```
+
+```sh
+$ pwd
+/Users/beoliver/Desktop
 $ tp docs -a ~/Documents
 $ tp docs
+$ pwd
+/Users/beoliver/Documents
 ```
 
 # Install
