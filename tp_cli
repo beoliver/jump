@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+import argparse
+import os
+import sys
+from pathlib import Path
+
+
+def alias_path():
+    return Path(os.path.dirname(os.path.realpath(__file__))) / "aliases.csv"
+
+
+def aliases():
+    with open(alias_path(), "r+") as f:
+        return dict(line.strip().split(",") for line in f)
+
+
+def write_aliases(alias_dict):
+    with open(alias_path(), "w+") as f:
+        for name, path in sorted(alias_dict.items()):
+            f.write("{},{}\n".format(name, path))
+
+
+parser = argparse.ArgumentParser("tp", description="TelePort around your filesystem")
+
+parser.add_argument(
+    "name", nargs="?", type=str, metavar="TAG", help="the TAG used as an alias."
+)
+parser.add_argument(
+    "-a", type=str, metavar="DIR", help="DIR to associate with TAG",
+)
+parser.add_argument(
+    "-f", action="store_true", help="Use force",
+)
+parser.add_argument(
+    "-D", action="store_true", help="Delete an entry",
+)
+
+if __name__ == "__main__":
+
+    existing_aliases = aliases()
+
+    if len(sys.argv) < 2:
+        if not existing_aliases:
+            sys.exit()
+        pad = max(len(x) for x in existing_aliases.keys())
+        for k, v in existing_aliases.items():
+            print("{}\t{}".format(k.ljust(pad), v))
+        sys.exit()
+
+    args = parser.parse_args()
+    # print(args)
+
+    name = args.name
+
+    if args.D:
+        if name not in existing_aliases:
+            sys.exit()
+        del existing_aliases[name]
+        write_aliases(existing_aliases)
+        sys.exit()
+
+    dir = args.a
+    existing_mapping = existing_aliases.get(name)
+    if not dir:
+        if existing_mapping:
+            print(existing_mapping)
+        sys.exit(0)
+
+    # we are adding
+    abs_dir = Path(os.path.abspath(dir))
+    if not abs_dir.is_dir():
+        print("No such directory '{}'".format(abs_dir))
+        sys.exit(1)
+
+    if not args.f and existing_mapping:
+        print("{} already exists - links to {}".format(name, existing_mapping))
+        sys.exit(1)
+
+    existing_aliases[name] = str(abs_dir)
+    write_aliases(existing_aliases)
+

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# set -e
+
+if [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]
+then
+    RESULT=$("${DIR}/tp_cli" "${@}")
+    if [ ! -z "${RESULT}" ]
+    then             
+        cd "${RESULT}"
+    fi
+else
+    "${DIR}/tp_cli" "${@}"
+fi
