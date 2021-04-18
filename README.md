@@ -12,6 +12,15 @@ alias name="cd ${PATH_TO_DIR}"
 
 However, unlike the use of `alias`, using `tp` you don't need to source you profile after adding an alias. It is also possible to use alias names that you otherwise conflict with existing applications.
 
+```sh
+tp
+tp ALIAS
+tp ALIAS --add [PATH]
+tp ALIAS --show
+tp ALIAS --delete
+tp ALIAS --rename ALIAS
+```
+
 ## Listing
 
 When called with no arguments `tp` will list all alias names and their directories.

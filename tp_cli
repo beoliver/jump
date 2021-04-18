@@ -21,29 +21,55 @@ def write_aliases(alias_dict):
             f.write("{},{}\n".format(name, path))
 
 
-valid_tag_regex = re.compile("^[a-zA-Z0-9_][a-zA-Z0-9_-]*$")
+valid_alias_regex = re.compile("^[a-zA-Z0-9_][a-zA-Z0-9_-]*$")
 
 
-def valid_tag(s):
-    if valid_tag_regex.match(s):
-        return True
-    return False
+def ensure_valid_alias(name):
+    if valid_alias_regex.match(name):
+        return name
+    print("Not a valid alias: '{}'".format(name))
+    sys.exit()
 
 
-parser = argparse.ArgumentParser("tp", description="TelePort around your filesystem")
-
-parser.add_argument("name", nargs="?", type=str, metavar="ALIAS", help="The ALIAS")
-parser.add_argument(
-    "-a", type=str, metavar="DIR", help="DIR to associate with ALIAS",
+parser = argparse.ArgumentParser(
+    "tp",
+    description="""
+    TelePort around your filesystem. 
+    When invoked without any arguments all saved aliases and their associated paths are listed.
+    When invoked with a single NAME alias your current working directory will be changed to the associated PATH (if it exists).
+    """,
 )
+
 parser.add_argument(
-    "-s", action="store_true", help="Show DIR for ALIAS",
+    "name", nargs="?", type=str, metavar="NAME", help="Name of the alias"
 )
-parser.add_argument(
-    "-f", action="store_true", help="Use force",
+
+group = parser.add_mutually_exclusive_group()
+
+group.add_argument(
+    "-a",
+    "--add",
+    nargs="?",
+    type=str,
+    const=True,
+    metavar="PATH",
+    help="Add alias for the Directory specified by PATH. If no PATH is provided, then the current working directory is used.",
 )
-parser.add_argument(
-    "-D", action="store_true", help="Delete an ALIAS",
+group.add_argument(
+    "-s", "--show", action="store_true", help="Show PATH for alias NAME",
+)
+group.add_argument(
+    "-r",
+    "--rename",
+    metavar="NAME",
+    type=str,
+    help="Rename existing alias NAME with provided NAME",
+)
+group.add_argument(
+    "-d",
+    "--delete",
+    action="store_true",
+    help="Remove the alias NAME and its associated PATH from the tp database.",
 )
 
 if __name__ == "__main__":
@@ -59,41 +85,55 @@ if __name__ == "__main__":
         sys.exit()
 
     args = parser.parse_args()
-    # print(args)
 
     name = args.name
-    if not valid_tag(name):
-        print("Not a valid tag: '{}'".format(name))
-        sys.exit()
+    ensure_valid_alias(name)
 
-    if args.D:
+    if args.delete:
         if name not in existing_aliases:
             sys.exit()
         del existing_aliases[name]
         write_aliases(existing_aliases)
         sys.exit()
 
-    dir = args.a
+    add_dir = args.add
     existing_mapping = existing_aliases.get(name)
 
-    if args.s:
+    if args.show:
         if existing_mapping:
             print(existing_mapping)
-        sys.exit(0)
+        sys.exit()
 
-    if not dir:
+    if args.rename:
+        ensure_valid_alias(args.rename)
+        rename_existing_alias = existing_aliases.get(args.rename)
+        if rename_existing_alias:
+            print(
+                "'{}' is an existing alias for '{}'".format(
+                    args.rename, rename_existing_alias
+                )
+            )
+            sys.exit(1)
+        if existing_mapping:
+            del existing_aliases[name]
+            existing_aliases[args.rename] = existing_mapping
+            write_aliases(existing_aliases)
+            sys.exit()
+
+    if not add_dir:
         if existing_mapping:
             print(existing_mapping)
-        sys.exit(0)
+        sys.exit()
 
     # we are adding
+    dir = os.getcwd() if add_dir == True else add_dir
     abs_dir = Path(os.path.abspath(dir))
     if not abs_dir.is_dir():
         print("No such directory '{}'".format(abs_dir))
         sys.exit(1)
 
-    if not args.f and existing_mapping:
-        print("{} already exists - links to {}".format(name, existing_mapping))
+    if existing_mapping:
+        print("'{}' is an existing alias for '{}'".format(name, existing_mapping))
         sys.exit(1)
 
     existing_aliases[name] = str(abs_dir)
