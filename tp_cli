@@ -32,17 +32,18 @@ def valid_tag(s):
 
 parser = argparse.ArgumentParser("tp", description="TelePort around your filesystem")
 
+parser.add_argument("name", nargs="?", type=str, metavar="ALIAS", help="The ALIAS")
 parser.add_argument(
-    "name", nargs="?", type=str, metavar="TAG", help="the TAG used as an alias."
+    "-a", type=str, metavar="DIR", help="DIR to associate with ALIAS",
 )
 parser.add_argument(
-    "-a", type=str, metavar="DIR", help="DIR to associate with TAG",
+    "-s", action="store_true", help="Show DIR for ALIAS",
 )
 parser.add_argument(
     "-f", action="store_true", help="Use force",
 )
 parser.add_argument(
-    "-D", action="store_true", help="Delete an entry",
+    "-D", action="store_true", help="Delete an ALIAS",
 )
 
 if __name__ == "__main__":
@@ -74,6 +75,12 @@ if __name__ == "__main__":
 
     dir = args.a
     existing_mapping = existing_aliases.get(name)
+
+    if args.s:
+        if existing_mapping:
+            print(existing_mapping)
+        sys.exit(0)
+
     if not dir:
         if existing_mapping:
             print(existing_mapping)

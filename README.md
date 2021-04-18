@@ -23,7 +23,7 @@ $ tp
 ## Adding
 
 ```sh
-$ tp <name> -a <path>
+tp <alias> -a <path>
 ```
 
 ### Example
@@ -36,10 +36,25 @@ docs    /Users/you/Documents
 pics    /Users/you/Pictures
 ```
 
+## Viewing an alias
+
+```sh
+tp <alias> -s
+```
+
+### Example
+
+```sh
+[Users/you] $ tp pics -s
+/Users/you/Pictures
+[Users/you] $ cd $(tp pics -s)
+[/Users/you/Pictures] $
+```
+
 ## Teleporting
 
 ```sh
-$ tp <name>
+tp <alias>
 ```
 
 ### Example
