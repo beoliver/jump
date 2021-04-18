@@ -67,6 +67,9 @@ group.add_argument(
     action="store_true",
     help="Remove the ALIAS and its associated PATH from the tp database.",
 )
+group.add_argument(
+    "--list-aliases", action="store_true", help="Show all saved aliases",
+)
 
 if __name__ == "__main__":
 
@@ -81,6 +84,11 @@ if __name__ == "__main__":
         sys.exit()
 
     args = parser.parse_args()
+
+    if args.list_aliases:
+        for k, v in existing_aliases.items():
+            print(k)
+        sys.exit()
 
     name = args.name
     ensure_valid_alias(name)
