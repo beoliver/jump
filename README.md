@@ -2,19 +2,54 @@
 
 TelePort around your filesystem
 
-# Example
+`tp` lets you associate directory paths with names. You can then use these names to quickly change directory.
+
+This is similar to adding aliases to you `.bash_profile`.
 
 ```sh
-$ tp --help
+alias name="cd ${PATH_TO_DIR}"
 ```
 
+However, unlike the use of `alias`, using `tp` you don't need to source you profile after adding an alias. It is also possible to use alias names that you otherwise conflict with existing applications.
+
+## Listing
+
+When called with no arguments `tp` will list all alias names and their directories.
+
 ```sh
-$ pwd
-/Users/beoliver/Desktop
-$ tp docs -a ~/Documents
-$ tp docs
-$ pwd
-/Users/beoliver/Documents
+$ tp
+```
+
+## Adding
+
+```sh
+$ tp <name> -a <path>
+```
+
+### Example
+
+```sh
+[Users/you] $ tp pics -a ~/Pictures
+[Users/you] $ tp docs -a ~/Documents
+[Users/you] $ tp
+docs    /Users/you/Documents
+pics    /Users/you/Pictures
+```
+
+## Teleporting
+
+```sh
+$ tp <name>
+```
+
+### Example
+
+```sh
+[Users/you] $ tp
+docs    /Users/you/Documents
+pics    /Users/you/Pictures
+[Users/you] $ tp pics
+[Users/you/Pictures] $
 ```
 
 # Install
