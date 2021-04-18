@@ -13,12 +13,7 @@ alias name="cd ${PATH_TO_DIR}"
 However, unlike the use of `alias`, using `tp` you don't need to source you profile after adding an alias. It is also possible to use alias names that you otherwise conflict with existing applications.
 
 ```sh
-tp
-tp ALIAS
-tp ALIAS --add [PATH]
-tp ALIAS --show
-tp ALIAS --delete
-tp ALIAS --rename ALIAS
+tp [-h] [-a [PATH] | -s | -r NAME | -d] [ALIAS]
 ```
 
 ## Listing
@@ -32,7 +27,7 @@ $ tp
 ## Adding
 
 ```sh
-tp <alias> -a <path>
+tp ALIAS -a PATH
 ```
 
 ### Example
@@ -48,7 +43,7 @@ pics    /Users/you/Pictures
 ## Viewing an alias
 
 ```sh
-tp <alias> -s
+tp ALIAS -s
 ```
 
 ### Example
@@ -63,7 +58,7 @@ tp <alias> -s
 ## Teleporting
 
 ```sh
-tp <alias>
+tp ALIAS
 ```
 
 ### Example

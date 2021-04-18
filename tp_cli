@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "name", nargs="?", type=str, metavar="NAME", help="Name of the alias"
+    "name", nargs="?", type=str, metavar="ALIAS", help="The alias to use."
 )
 
 group = parser.add_mutually_exclusive_group()
@@ -56,20 +56,16 @@ group.add_argument(
     help="Add alias for the Directory specified by PATH. If no PATH is provided, then the current working directory is used.",
 )
 group.add_argument(
-    "-s", "--show", action="store_true", help="Show PATH for alias NAME",
+    "-s", "--show", action="store_true", help="Show PATH for ALIAS",
 )
 group.add_argument(
-    "-r",
-    "--rename",
-    metavar="NAME",
-    type=str,
-    help="Rename existing alias NAME with provided NAME",
+    "-r", "--rename", metavar="NAME", type=str, help="Rename existing ALIAS to NAME",
 )
 group.add_argument(
     "-d",
     "--delete",
     action="store_true",
-    help="Remove the alias NAME and its associated PATH from the tp database.",
+    help="Remove the ALIAS and its associated PATH from the tp database.",
 )
 
 if __name__ == "__main__":
