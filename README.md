@@ -37,3 +37,7 @@ function tp() {
 ```sh
 $ source ~/.bash_profile # ~.zshrc
 ```
+
+# TODO
+
+Completion when searching typing a tag
