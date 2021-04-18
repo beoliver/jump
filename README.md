@@ -94,4 +94,8 @@ $ source ~/.bash_profile # ~.zshrc
 
 # TODO
 
-Completion when searching typing a tag
+Completions when searching typing a tag
+
+```sh
+$ . ./completions.sh
+```
