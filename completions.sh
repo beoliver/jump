@@ -1,8 +1,9 @@
 
 function _tp() {
-    length=${#COMP_WORDS[@]}
-    if [[ "${length}" -eq 1 ]]; then
-        COMPREPLY=( $(compgen -W "$(tp --list-aliases)" -- "$word") )        
+    COMPREPLY=()
+    local word="${COMP_WORDS[COMP_CWORD]}"
+    if [ "$COMP_CWORD" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "$(tp --list-aliases)" -- "$word") )    
     fi
 }
 
