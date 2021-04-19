@@ -82,20 +82,15 @@ $ touch aliases.csv
 Add the following to your `.bash_profile` or `.zshrc` file.
 
 ```sh
+TELEPORT_DIR=~/Documents/projects/projects/tp
+
 function tp() {
-    local DIR=<path-to-cloned-repo>
-    . "${DIR}"/tp "${@}"
+    . "${TELEPORT_DIR}"/tp "${@}"
 }
+
+. ${TELEPORT_DIR}/completions.sh
 ```
 
 ```sh
 $ source ~/.bash_profile # ~.zshrc
-```
-
-# TODO
-
-Completions when searching typing a tag
-
-```sh
-$ . ./completions.sh
 ```

@@ -4,11 +4,11 @@
 
 if [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]
 then
-    RESULT=$("${DIR}/tp_cli" "${@}")
+    RESULT=$("${TELEPORT_DIR}/tp_cli" "${@}")
     if [ ! -z "${RESULT}" ]
     then             
         cd "${RESULT}"
     fi
 else
-    "${DIR}/tp_cli" "${@}"
+    "${TELEPORT_DIR}/tp_cli" "${@}"
 fi
