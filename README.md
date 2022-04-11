@@ -1,4 +1,4 @@
-# tp
+# jump
 
 JUMP around your filesystem
 
