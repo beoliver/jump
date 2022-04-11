@@ -5,18 +5,22 @@ import re
 import sys
 from pathlib import Path
 
+script_path = os.path.realpath(__file__)
+script_dir  = os.path.dirname(script_path)
+alias_path = Path(script_dir,"aliases.csv")
 
-def alias_path():
-    return Path(os.path.dirname(os.path.realpath(__file__))) / "aliases.csv"
 
+def ensure_aliases_csv_exists():
+    if not alias_path.exists():
+        alias_path.touch()
 
 def aliases():
-    with open(alias_path(), "r+") as f:
+    with open(alias_path, "r+") as f:
         return dict(line.strip().split(",") for line in f)
 
 
 def write_aliases(alias_dict):
-    with open(alias_path(), "w+") as f:
+    with open(alias_path, "w+") as f:
         for name, path in sorted(alias_dict.items()):
             f.write("{},{}\n".format(name, path))
 
@@ -32,9 +36,9 @@ def ensure_valid_alias(name):
 
 
 parser = argparse.ArgumentParser(
-    "tp",
+    "jump",
     description="""
-    TelePort around your filesystem. 
+    Jump around your filesystem. 
     When invoked without any arguments all saved aliases and their associated paths are listed.
     When invoked with a single NAME alias your current working directory will be changed to the associated PATH (if it exists).
     """,
@@ -73,6 +77,7 @@ group.add_argument(
 
 if __name__ == "__main__":
 
+    ensure_aliases_csv_exists()
     existing_aliases = aliases()
 
     if len(sys.argv) < 2:
