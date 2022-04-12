@@ -28,7 +28,6 @@ ${bold}EXAMPLES${normal}
     jump home -a 
     jump docs -a ~/Documents
     jump docs -d
-	source jump docs
 "
 
 # check for $HOME/.config/jump
@@ -43,7 +42,7 @@ if [[ ! -d $JUMP_COMFIG_DIR ]]; then
 		mkdir -p "$JUMP_COMFIG_DIR"
 		sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(alias TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
 	else
-		exit
+		return
 	fi 
 fi 
 
@@ -55,29 +54,35 @@ function jump-options () {
     case $1 in
         -h | --help)
             echo "${help_str}"
+			return
             ;;
         -l | --list)
             sqlite3 -column "${SQLITE_DB}" "SELECT alias FROM aliases;"
+			return
             ;;			
         -d | --delete)
             sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE alias='${alias_name}';"
+			return
             ;;					
 		-a | --alias)
 			if [[ -z "$alias_name" ]]; then
 				# display help string and exit
 				echo "$help_str"
+				return
 			fi 
 			if [[ -z $2 ]]; then
-				alias_dir=$(pwd)				
+				alias_dir=$(pwd)								
 			else 
 				alias_dir=$2
 				if [[ ! -d "$alias_dir" ]]; then
 					# display help string and exit
 					echo "$help_str"
+					return
 				fi 
 			fi 			
 			sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
 			echo "Added alias '${alias_name}' for path '${alias_dir}'"
+			return
 			;;			
 		*)
 		;;
@@ -96,8 +101,10 @@ elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
 	# this indiecates that it is a `jump <alias>` command
     DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE alias='${1}';")
     if [ -n "${DIR}" ]; then
-        cd "${DIR}" || exit
-    fi
+        cd "${DIR}" || return
+	else
+		return
+    fi	
 else
 	# input is >= 1 and the first argument is a "flag"
     jump-options "${@}"
