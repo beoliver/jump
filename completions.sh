@@ -7,4 +7,4 @@ function _jump() {
     fi
 }
 
-complete -F _jump jump
+complete -F _jump j

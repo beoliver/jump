@@ -82,12 +82,10 @@ $ touch aliases.csv
 Add the following to your `.bash_profile` or `.zshrc` file.
 
 ```sh
-JUMP_DIR=~/Documents/projects/projects/jump
-
+JUMP_DIR=~/<path>/<to>/jump
 function j() {
     . "${JUMP_DIR}"/jump "${@}"
 }
-
 . ${JUMP_DIR}/completions.sh
 ```
 
