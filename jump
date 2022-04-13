@@ -17,9 +17,10 @@ ${bold}OPTIONS${normal}
     -h (--help)
         Display this help message and exit.
     -a (--alias) [${underline}PATH${nounderline}]
-        Associate the NAME with the PATH. If no value is provided then the current
-        working directory will be used.
-    -r (--rename) [${underline}NEW_NAME${nounderline}]
+        Associate the ${underline}NAME${nounderline} with the ${underline}PATH${nounderline}. If no ${underline}PATH${nounderline} is provided then the path to 
+        the current working directory will be used. If no ${underline}NAME${nounderline} is provided then the
+        current working directory is used.
+    -r (--rename) ${underline}NEW_NAME${nounderline}
         Rename the alias ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
     -l (--list)
         List all stored alias names.
@@ -90,8 +91,7 @@ function jump-options () {
     -a | --alias)
       if [[ -z "$alias_name" ]]; then
         # display help string and exit
-        echo "Setting temp symbol '.' to "
-        return
+        alias_name=$(basename "$(pwd)")
       fi
       if [[ -z $2 ]]; then
         alias_dir=$(pwd)
