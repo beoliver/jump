@@ -20,7 +20,9 @@ ${bold}OPTIONS${normal}
         Associate the NAME with the PATH. If no value is provided then the current
   working directory will be used.
     -l (--list)
-        List all stored entires.
+        List all stored alias names.
+    -L (--list-all)
+        List all stored entires and their associated paths.        
     -d (--delete)
         Delete the NAME and any associated PATH.
 
@@ -51,7 +53,6 @@ function jump-options () {
     local alias_name=$1
     shift
   fi
-  echo "$alias_name"
     case $1 in
       -h | --help)
         echo "${help_str}"
@@ -59,6 +60,10 @@ function jump-options () {
         ;;
       -l | --list)
         sqlite3 -column "${SQLITE_DB}" "SELECT name FROM aliases;"
+        return
+        ;;
+      -L | --list-all)
+        sqlite3 -column "${SQLITE_DB}" "SELECT * FROM aliases;"
         return
         ;;
       -d | --delete)
