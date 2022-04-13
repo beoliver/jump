@@ -18,7 +18,7 @@ ${bold}OPTIONS${normal}
         Display this help message and exit.
     -a (--alias) [${underline}PATH${nounderline}]
         Associate the NAME with the PATH. If no value is provided then the current
-	working directory will be used.
+  working directory will be used.
     -l (--list)
         List all stored entires.
     -d (--delete)
@@ -36,77 +36,77 @@ JUMP_COMFIG_DIR="$HOME/.config/jump"
 SQLITE_DB="$JUMP_COMFIG_DIR/jump.db"
 
 if [[ ! -d $JUMP_COMFIG_DIR ]]; then 
-	echo "Create '$JUMP_COMFIG_DIR' [y/N]"
-	read -r confirmation
-	if [[ "$confirmation" = "y" ]]; then 
-		mkdir -p "$JUMP_COMFIG_DIR"
-		sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(alias TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
-	else
-		return
-	fi 
+  echo "Create '$JUMP_COMFIG_DIR' [y/N]"
+  read -r confirmation
+  if [[ "$confirmation" = "y" ]]; then 
+    mkdir -p "$JUMP_COMFIG_DIR"
+    sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(alias TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
+  else
+    return
+  fi 
 fi 
 
 function jump-options () {
-	if [[ $1 != "-"* ]]; then
-		local alias_name=$1
-		shift
-	fi 
+  if [[ $1 != "-"* ]]; then
+    local alias_name=$1
+    shift
+  fi 
     case $1 in
       -h | --help)
         echo "${help_str}"
-			  return
+        return
         ;;
       -l | --list)
         sqlite3 -column "${SQLITE_DB}" "SELECT alias FROM aliases;"
-			  return
+        return
         ;;			
       -d | --delete)
         sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE alias='${alias_name}';"
-			  return
+        return
         ;;					
-		  -a | --alias)
-			  if [[ -z "$alias_name" ]]; then
-				  # display help string and exit
-				  echo "$help_str"
-				  return
-			  fi 
-			  if [[ -z $2 ]]; then
-				  alias_dir=$(pwd)								
-			  else 
-				  alias_dir=$2
-				  if [[ ! -d "$alias_dir" ]]; then
-					  # display help string and exit
-					  echo "$help_str"
-					  return
-				  fi 
-			  fi 			
-			  sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
-			  echo "Added alias '${alias_name}' for path '${alias_dir}'"
-			  return
-			  ;;			
-		  *)
-		    ;;
-	  esac
+      -a | --alias)
+        if [[ -z "$alias_name" ]]; then
+          # display help string and exit
+          echo "$help_str"
+          return
+        fi 
+        if [[ -z $2 ]]; then
+          alias_dir=$(pwd)								
+        else 
+          alias_dir=$2
+          if [[ ! -d "$alias_dir" ]]; then
+            # display help string and exit
+            echo "$help_str"
+            return
+          fi 
+        fi 			
+        sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
+        echo "Added alias '${alias_name}' for path '${alias_dir}'"
+        return
+        ;;			
+      *)
+        ;;
+    esac
 }
 
 # -----------------------------------------------------------------------------
 
 if [[ "${#}" -eq 0 ]]; then
-	# input has length 0
-	# this indiecates that it is a `jump` command.
-	# we are friendly and list all stored alias/path pairs
-	sqlite3 -column "${SQLITE_DB}" "SELECT * FROM aliases;"
+  # input has length 0
+  # this indiecates that it is a `jump` command.
+  # we are friendly and list all stored alias/path pairs
+  sqlite3 -column "${SQLITE_DB}" "SELECT * FROM aliases;"
 elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
-	# input has length 1 and is not a string prefixed with a '-'
-	# this indiecates that it is a `jump <alias>` command
+  # input has length 1 and is not a string prefixed with a '-'
+  # this indiecates that it is a `jump <alias>` command
     DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE alias='${1}';")
     if [ -n "${DIR}" ]
     then
       cd "${DIR}" || return
-	  else
-		  return
+    else
+      return
     fi	
 else
-	# input is >= 1 and the first argument is a "flag"
+  # input is >= 1 and the first argument is a "flag"
     jump-options "${@}"
 fi
