@@ -52,41 +52,41 @@ function jump-options () {
 		shift
 	fi 
     case $1 in
-        -h | --help)
-            echo "${help_str}"
-			return
-            ;;
-        -l | --list)
-            sqlite3 -column "${SQLITE_DB}" "SELECT alias FROM aliases;"
-			return
-            ;;			
-        -d | --delete)
-            sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE alias='${alias_name}';"
-			return
-            ;;					
-		-a | --alias)
-			if [[ -z "$alias_name" ]]; then
-				# display help string and exit
-				echo "$help_str"
-				return
-			fi 
-			if [[ -z $2 ]]; then
-				alias_dir=$(pwd)								
-			else 
-				alias_dir=$2
-				if [[ ! -d "$alias_dir" ]]; then
-					# display help string and exit
-					echo "$help_str"
-					return
-				fi 
-			fi 			
-			sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
-			echo "Added alias '${alias_name}' for path '${alias_dir}'"
-			return
-			;;			
-		*)
-		;;
-	esac
+      -h | --help)
+        echo "${help_str}"
+			  return
+        ;;
+      -l | --list)
+        sqlite3 -column "${SQLITE_DB}" "SELECT alias FROM aliases;"
+			  return
+        ;;			
+      -d | --delete)
+        sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE alias='${alias_name}';"
+			  return
+        ;;					
+		  -a | --alias)
+			  if [[ -z "$alias_name" ]]; then
+				  # display help string and exit
+				  echo "$help_str"
+				  return
+			  fi 
+			  if [[ -z $2 ]]; then
+				  alias_dir=$(pwd)								
+			  else 
+				  alias_dir=$2
+				  if [[ ! -d "$alias_dir" ]]; then
+					  # display help string and exit
+					  echo "$help_str"
+					  return
+				  fi 
+			  fi 			
+			  sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
+			  echo "Added alias '${alias_name}' for path '${alias_dir}'"
+			  return
+			  ;;			
+		  *)
+		    ;;
+	  esac
 }
 
 # -----------------------------------------------------------------------------
@@ -100,10 +100,11 @@ elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
 	# input has length 1 and is not a string prefixed with a '-'
 	# this indiecates that it is a `jump <alias>` command
     DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE alias='${1}';")
-    if [ -n "${DIR}" ]; then
-        cd "${DIR}" || return
-	else
-		return
+    if [ -n "${DIR}" ]
+    then
+      cd "${DIR}" || return
+	  else
+		  return
     fi	
 else
 	# input is >= 1 and the first argument is a "flag"
