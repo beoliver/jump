@@ -8,7 +8,7 @@ nounderline=$(tput rmul)
 help_str="jump - around your filesystem
 
 ${bold}SYNOPSIS${normal}
-    jump [NAME] [option] ...
+    jump [NAME] [option]
 
     Calling jump with a single ${underline}NAME${nounderline} argument will be interpreted as an attempt to 
     change directory using the ${underline}PATH${nounderline} assocaited with the ${underline}NAME${nounderline}.
@@ -18,7 +18,9 @@ ${bold}OPTIONS${normal}
         Display this help message and exit.
     -a (--alias) [${underline}PATH${nounderline}]
         Associate the NAME with the PATH. If no value is provided then the current
-  working directory will be used.
+        working directory will be used.
+    -r (--rename) [${underline}NEW_NAME${nounderline}]
+        Rename the alias ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
     -l (--list)
         List all stored alias names.
     -L (--list-all)
@@ -53,46 +55,61 @@ function jump-options () {
     local alias_name=$1
     shift
   fi
-    case $1 in
-      -h | --help)
-        echo "${help_str}"
+  case $1 in
+    -h | --help)
+      echo "${help_str}"
+      return
+      ;;
+    -l | --list)
+      sqlite3 -column "${SQLITE_DB}" "SELECT name FROM aliases;"
+      return
+      ;;
+    -L | --list-all)
+      sqlite3 -column "${SQLITE_DB}" "SELECT * FROM aliases;"
+      return
+      ;;
+    -d | --delete)
+      sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${alias_name}';"
+      return
+      ;;
+    -r | --rename)
+      if [[ -z "$alias_name" ]]; then
+        # display help string and exit
+        echo "$help_str"
         return
-        ;;
-      -l | --list)
-        sqlite3 -column "${SQLITE_DB}" "SELECT name FROM aliases;"
+      fi
+      local new_alias_name=$2
+      if [[ -z "$new_alias_name" ]]; then
+        # display help string and exit
+        echo "$help_str"
         return
-        ;;
-      -L | --list-all)
-        sqlite3 -column "${SQLITE_DB}" "SELECT * FROM aliases;"
+      fi
+      sqlite3 -column "${SQLITE_DB}" "UPDATE aliases SET name='${new_alias_name}' WHERE name='${alias_name}';"
+      return
+      ;;
+    -a | --alias)
+      if [[ -z "$alias_name" ]]; then
+        # display help string and exit
+        echo "Setting temp symbol '.' to "
         return
-        ;;
-      -d | --delete)
-        sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${alias_name}';"
+      fi
+      if [[ -z $2 ]]; then
+        alias_dir=$(pwd)
+      else
+        alias_dir=$2
+      fi
+      if [[ ! -d "$alias_dir" ]]; then
+        # display help string and exit
+        echo "$help_str"
         return
-        ;;
-      -a | --alias)
-        if [[ -z "$alias_name" ]]; then
-          # display help string and exit
-          echo "Setting temp symbol '.' to "
-          return
-        fi
-        if [[ -z $2 ]]; then
-          alias_dir=$(pwd)
-        else
-          alias_dir=$2
-          if [[ ! -d "$alias_dir" ]]; then
-            # display help string and exit
-            echo "$help_str"
-            return
-          fi
-        fi
-        sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
-        echo "Added alias name '${alias_name}' for path '${alias_dir}'"
-        return
-        ;;
-      *)
-        ;;
-    esac
+      fi
+      sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
+      echo "Added alias name '${alias_name}' for path '${alias_dir}'"
+      return
+      ;;
+    *)
+      ;;
+  esac
 }
 
 # -----------------------------------------------------------------------------
