@@ -35,22 +35,23 @@ ${bold}EXAMPLES${normal}
 JUMP_CONFIG_DIR="$HOME/.config/jump"
 SQLITE_DB="$JUMP_CONFIG_DIR/jump.db"
 
-if [[ ! -d $JUMP_CONFIG_DIR ]]; then 
+if [[ ! -d $JUMP_CONFIG_DIR ]]; then
   echo "Create '$JUMP_CONFIG_DIR' [y/N]"
   read -r confirmation
-  if [[ "$confirmation" = "y" ]]; then 
+  if [[ "$confirmation" = "y" ]]; then
     mkdir -p "$JUMP_CONFIG_DIR"
     sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(name TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
   else
     return
-  fi 
-fi 
+  fi
+fi
 
 function jump-options () {
   if [[ $1 != "-"* ]]; then
     local alias_name=$1
     shift
-  fi 
+  fi
+  echo "$alias_name"
     case $1 in
       -h | --help)
         echo "${help_str}"
@@ -59,31 +60,31 @@ function jump-options () {
       -l | --list)
         sqlite3 -column "${SQLITE_DB}" "SELECT name FROM aliases;"
         return
-        ;;			
+        ;;
       -d | --delete)
         sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${alias_name}';"
         return
-        ;;					
+        ;;
       -a | --alias)
         if [[ -z "$alias_name" ]]; then
           # display help string and exit
-          echo "$help_str"
+          echo "Setting temp symbol '.' to "
           return
-        fi 
+        fi
         if [[ -z $2 ]]; then
-          alias_dir=$(pwd)								
-        else 
+          alias_dir=$(pwd)
+        else
           alias_dir=$2
           if [[ ! -d "$alias_dir" ]]; then
             # display help string and exit
             echo "$help_str"
             return
-          fi 
-        fi 			
+          fi
+        fi
         sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
         echo "Added alias name '${alias_name}' for path '${alias_dir}'"
         return
-        ;;			
+        ;;
       *)
         ;;
     esac
@@ -105,7 +106,7 @@ elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
       cd "${DIR}" || return
     else
       return
-    fi	
+    fi
 else
   # input is >= 1 and the first argument is a "flag"
     jump-options "${@}"
