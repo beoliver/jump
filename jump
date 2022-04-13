@@ -32,15 +32,15 @@ ${bold}EXAMPLES${normal}
 
 # check for $HOME/.config/jump
 
-JUMP_COMFIG_DIR="$HOME/.config/jump"
-SQLITE_DB="$JUMP_COMFIG_DIR/jump.db"
+JUMP_CONFIG_DIR="$HOME/.config/jump"
+SQLITE_DB="$JUMP_CONFIG_DIR/jump.db"
 
-if [[ ! -d $JUMP_COMFIG_DIR ]]; then 
-  echo "Create '$JUMP_COMFIG_DIR' [y/N]"
+if [[ ! -d $JUMP_CONFIG_DIR ]]; then 
+  echo "Create '$JUMP_CONFIG_DIR' [y/N]"
   read -r confirmation
   if [[ "$confirmation" = "y" ]]; then 
-    mkdir -p "$JUMP_COMFIG_DIR"
-    sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(alias TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
+    mkdir -p "$JUMP_CONFIG_DIR"
+    sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(name TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
   else
     return
   fi 
@@ -57,11 +57,11 @@ function jump-options () {
         return
         ;;
       -l | --list)
-        sqlite3 -column "${SQLITE_DB}" "SELECT alias FROM aliases;"
+        sqlite3 -column "${SQLITE_DB}" "SELECT name FROM aliases;"
         return
         ;;			
       -d | --delete)
-        sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE alias='${alias_name}';"
+        sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${alias_name}';"
         return
         ;;					
       -a | --alias)
@@ -81,7 +81,7 @@ function jump-options () {
           fi 
         fi 			
         sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
-        echo "Added alias '${alias_name}' for path '${alias_dir}'"
+        echo "Added alias name '${alias_name}' for path '${alias_dir}'"
         return
         ;;			
       *)
@@ -99,7 +99,7 @@ if [[ "${#}" -eq 0 ]]; then
 elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
   # input has length 1 and is not a string prefixed with a '-'
   # this indiecates that it is a `jump <alias>` command
-    DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE alias='${1}';")
+    DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE name='${1}';")
     if [ -n "${DIR}" ]
     then
       cd "${DIR}" || return
