@@ -32,12 +32,13 @@ ${bold}OPTIONS${normal}
         Display the generated functions for your .bash_profile or .zshrc file.
 "
 
+_path_to_script="$(cd "$(dirname "$0")" || exit; pwd -P)/$(basename "$0")"
 j_command_str="# The following function can be pasted into your shell profile.
 # calling the 'j' command with a single alias name is equivalent to calling
 # 'cd' on the path asociated with the alias.
 
 j () {
-  _jump_result=\"\$($0 \"\${@}\")\"
+  _jump_result=\"\$($_path_to_script \"\${@}\")\"
   if [ \"\${#}\" -eq 1 ]; then
     if case \${1} in -*) false;; *) true;; esac; then
       cd \"\$_jump_result\" && return
@@ -50,7 +51,7 @@ _jump_completions() {
   COMPREPLY=()
   local word=\"\${COMP_WORDS[COMP_CWORD]}\"
   if [ \"\$COMP_CWORD\" -eq 1 ]; then
-    COMPREPLY=(\$(compgen -W \"\$($0 --list-names)\" -- \"\$word\"))
+    COMPREPLY=(\$(compgen -W \"\$($_path_to_script --list-names)\" -- \"\$word\"))
   fi
 }
 

@@ -15,13 +15,16 @@ Unlike using the `alias` keyword in your bash/zsh profile, `jump` lets you avoid
 1. Download the `jump.sh` script.
 2. Run the command `jump.sh`.
 
-This will (if the user consents) create a directory `$HOME/.config/jump` that will contain a sqlite database file `jump.db`. and a `completions.sh` script.
+This will (if the user consents) create a directory `$HOME/.config/jump` that will contain a sqlite database file `jump.db`.
 
 A function will be printed to stdout that can be pasted into your `.bash_profile`/`.zshrc` file.
 
 
 
-```sh 
+```
+$ ./jump
+Create '/Users/beoliver/.config/jump' [y/N]
+y
 # The following function can be pasted into your shell profile.
 # calling the 'j' command with a single alias name is equivalent to calling
 # 'cd' on the path asociated with the alias.
