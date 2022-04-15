@@ -35,27 +35,14 @@ ${bold}EXAMPLES${normal}
     jump docs -d
 "
 
-# check for $HOME/.config/jump
-
-JUMP_CONFIG_DIR="$HOME/.config/jump"
-SQLITE_DB="$JUMP_CONFIG_DIR/jump.db"
-
-if [[ ! -d $JUMP_CONFIG_DIR ]]; then
-  echo "Create '$JUMP_CONFIG_DIR' [y/N]"
-  read -r confirmation
-  if [[ "$confirmation" = "y" ]]; then
-    mkdir -p "$JUMP_CONFIG_DIR"
-    sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(name TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
-  else
-    return
-  fi
-fi
+# -----------------------------------------------------------------------------
 
 function jump-options () {
+  ALIAS_NAME=""
   if [[ $1 != "-"* ]]; then
-    local alias_name=$1
+    ALIAS_NAME=$1
     shift
-  fi
+  fi  
   case $1 in
     -h | --help)
       echo "${help_str}"
@@ -70,47 +57,68 @@ function jump-options () {
       return
       ;;
     -d | --delete)
-      sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${alias_name}';"
+      sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${ALIAS_NAME}';"
       return
       ;;
     -r | --rename)
-      if [[ -z "$alias_name" ]]; then
+      if [[ -z "$ALIAS_NAME" ]]; then
         # display help string and exit
         echo "$help_str"
         return
       fi
-      local new_alias_name=$2
-      if [[ -z "$new_alias_name" ]]; then
+      NEW_ALIAS_NAME=$2
+      if [[ -z "$NEW_ALIAS_NAME" ]]; then
         # display help string and exit
         echo "$help_str"
         return
       fi
-      sqlite3 -column "${SQLITE_DB}" "UPDATE aliases SET name='${new_alias_name}' WHERE name='${alias_name}';"
+      sqlite3 -column "${SQLITE_DB}" "UPDATE aliases SET name='${NEW_ALIAS_NAME}' WHERE name='${ALIAS_NAME}';"
       return
       ;;
     -a | --alias)
-      if [[ -z "$alias_name" ]]; then
+      if [[ -z "$ALIAS_NAME" ]]; then
         # display help string and exit
-        alias_name=$(basename "$(pwd)")
+        ALIAS_NAME=$(basename "$(pwd)")
       fi
       if [[ -z $2 ]]; then
-        alias_dir=$(pwd)
+        ALIAS_DIR=$(pwd)
       else
-        alias_dir=$2
+        ALIAS_DIR=$2
       fi
-      if [[ ! -d "$alias_dir" ]]; then
+      if [[ ! -d "$ALIAS_DIR" ]]; then
         # display help string and exit
         echo "$help_str"
         return
       fi
-      sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${alias_name}', '${alias_dir}');"
-      echo "Added alias name '${alias_name}' for path '${alias_dir}'"
+      sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${ALIAS_NAME}', '${ALIAS_DIR}');"
+      echo "Added alias name '${ALIAS_NAME}' for path '${ALIAS_DIR}'"
       return
       ;;
     *)
       ;;
   esac
 }
+
+# -----------------------------------------------------------------------------
+# Entry point 
+# -----------------------------------------------------------------------------
+
+JUMP_CONFIG_DIR="$HOME/.config/jump"
+SQLITE_DB="$JUMP_CONFIG_DIR/jump.db"
+
+# -----------------------------------------------------------------------------
+# check that JUMP_CONFIG_DIR exists
+
+if [[ ! -d $JUMP_CONFIG_DIR ]]; then
+  echo "Create '$JUMP_CONFIG_DIR' [y/N]"
+  read -r confirmation
+  if [[ "$confirmation" = "y" ]]; then
+    mkdir -p "$JUMP_CONFIG_DIR"
+    sqlite3 -line "${SQLITE_DB}" "CREATE TABLE aliases(name TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
+  else
+    return
+  fi
+fi
 
 # -----------------------------------------------------------------------------
 
@@ -130,6 +138,6 @@ elif [ "${#}" -eq 1 ] && [[ "${1}" != "-"* ]]; then
       return
     fi
 else
-  # input is >= 1 and the first argument is a "flag"
+  # input is >= 1 and the first argument is a 'flag'
     jump-options "${@}"
 fi
