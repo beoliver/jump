@@ -22,7 +22,7 @@ ${bold}OPTIONS${normal}
         current working directory is used.
     -r (--rename) ${underline}NEW_NAME${nounderline}
         Rename the alias ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
-    -l (--list)
+    -l (--list-names)
         List all stored alias names.
     -L (--list-all)
         List all stored entires and their associated paths.        
