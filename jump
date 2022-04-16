@@ -16,7 +16,7 @@ ${bold}SYNOPSIS${normal}
 ${bold}OPTIONS${normal}
     -h (--help)
         Display this help message and exit.
-    -a (--alias) [${underline}PATH${nounderline}]
+    -a (--add) [${underline}PATH${nounderline}]
         Associate the ${underline}NAME${nounderline} with the ${underline}PATH${nounderline}. If no ${underline}PATH${nounderline} is provided then the path to 
         the current working directory will be used. If no ${underline}NAME${nounderline} is provided then the
         current working directory is used.
@@ -157,7 +157,7 @@ case $1 in
     fi
     sqlite3 -column "${SQLITE_DB}" "UPDATE aliases SET name='${NEW_ALIAS_NAME}' WHERE name='${ALIAS_NAME}';"
     ;;
-  -a | --alias)
+  -a | --add)
     if [ -z "$ALIAS_NAME" ]; then
       # display help string and exit
       ALIAS_NAME=$(basename "$(pwd)")
