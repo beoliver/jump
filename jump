@@ -30,6 +30,8 @@ ${bold}OPTIONS${normal}
         Delete the NAME and any associated PATH.
     -g (--generated)
         Display the generated functions for your .bash_profile or .zshrc file.
+    -p (--purge)
+        Remove any alias for a path that is not a directory.
 "
 
 _path_to_script="$(cd "$(dirname "$0")" || exit; pwd -P)/$(basename "$0")"
@@ -133,6 +135,13 @@ case $1 in
     ;;      
   -d | --delete)
     sqlite3 -column "${SQLITE_DB}" "DELETE FROM aliases WHERE name='${ALIAS_NAME}';"
+    ;;
+  -p | --purge)
+    sqlite3 -column "${SQLITE_DB}" "SELECT path FROM aliases;" | while read -r path ; do
+      if [ ! -d "$path" ]; then
+        sqlite3 "${SQLITE_DB}" "DELETE FROM aliases WHERE path='${path}';"
+      fi
+    done
     ;;
   -r | --rename)
     if [ -z "$ALIAS_NAME" ]; then
