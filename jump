@@ -170,6 +170,7 @@ case $1 in
     if [ ! -d "$ALIAS_DIR" ]; then
       # display help string and exit
       echo "$help_str"
+      exit
     fi
     sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${ALIAS_NAME}', '${ALIAS_DIR}');"
     echo "Added alias name '${ALIAS_NAME}' for path '${ALIAS_DIR}'"
