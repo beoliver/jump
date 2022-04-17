@@ -9,40 +9,42 @@ help_str="jump - around your filesystem
 
 ${bold}SYNOPSIS${normal}
 
-    jump to the directory associated with NAME
+    List all stored aliases and their paths:
+    j
+
+    Jump to the directory associated with NAME:
     j NAME
 
-    Add a new alias for the current working directory
+    Add a new alias for the current working directory:
     j -a [NAME]
 
-    Delete a saved alias NAME
+    Delete a saved alias NAME:
     j NAME -d
 
-    Rename a saved alias NAME to NEW_NAME
+    Rename a saved alias NAME to NEW_NAME:
     j NAME -r NEW_NAME
 
 ${bold}OPTIONS${normal}
-    -h (--help)
-        Display this help message and exit.
     -a (--add) [${underline}NAME${nounderline}]
-        Associate the ${underline}NAME${nounderline} with the current working directory. If no ${underline}NAME${nounderline} is provided then the
-        name of the current working directory is used.
+        Associate the ${underline}NAME${nounderline} with the current working directory. 
+        If no ${underline}NAME${nounderline} is provided then the name of the current 
+        working directory is used.
+    -d (--delete)
+        Delete ${underline}NAME${nounderline} and any associated PATH.
     -r (--rename) ${underline}NEW_NAME${nounderline}
-        Rename the alias ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
+        Rename ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
     -l (--list-names)
         List all stored alias names.
-    -L (--list-all)
-        List all stored entires and their associated paths.        
-    -d (--delete)
-        Delete the NAME and any associated PATH.
     -g (--generated)
-        Display the generated functions for your .bash_profile or .zshrc file.
+        Display the generated functions for your .bash_profile.
     -p (--purge)
         Remove any alias for a path that is not a directory.
+    -h (--help)
+        Display this help message and exit.
 "
 
 help_and_exit () {
-  echo help_str
+  echo "$help_str"
   exit
 }
 
@@ -129,13 +131,13 @@ case $1 in
   -l | --list-names)
     sqlite3 -column "${DB}" "SELECT name FROM aliases;"
     ;;
-  -L | --list-all)
-    sqlite3 -column "${DB}" "SELECT * FROM aliases;"
-    ;;
   -g | --generate)
     echo "$j_command_str"
     ;;      
   -d | --delete)
+    if [ -z "$NAME" ]; then
+      help_and_exit
+    fi  
     sqlite3 -column "${DB}" "DELETE FROM aliases WHERE name='${NAME}';"
     ;;
   -p | --purge)
@@ -166,6 +168,7 @@ case $1 in
     echo "Added alias name '${NAME}' for path '${DIR}'"
     ;;
   *)
+    help_and_exit
     ;;
 esac
 
