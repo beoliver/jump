@@ -57,8 +57,8 @@ j_command_str="# The following function can be pasted into your shell profile.
 # 'cd' on the path asociated with the alias.
 
 j () {
-  _jump_result=\"\$($_path_to_script \"\${@}\")\"
-  if [ \"\${#}\" -eq 1 ]; then
+  _jump_result=\"\$($_path_to_script \${@})\"
+  if [ \${#} -eq 1 ]; then
     if case \${1} in -*) false;; *) true;; esac; then
       cd \"\$_jump_result\" && return
     fi
