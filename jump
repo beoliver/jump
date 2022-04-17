@@ -93,32 +93,21 @@ if [ "${#}" -eq 0 ]; then
   exit
 fi
 
-if [ "${#}" -eq 1 ]; then 
-  case "$1" in
-    -*)
-      # argument is a flag... 
-      ;;
-    *)
-      DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE name='${1}';")
-      if [ -n "${DIR}" ]; then
-        echo "${DIR}"
-      fi
-      exit
-      ;; 
-  esac
-fi 
-
-ALIAS_NAME=""
 case "$1" in
-  -*)
-    # argument is a flag... 
+  -*) # argument is a flag... 
     ;;
   *)
     ALIAS_NAME=$1
     shift
+    if [ "${#}" -eq 0 ]; then 
+      DIR=$(sqlite3 -list "${SQLITE_DB}" "SELECT path FROM aliases WHERE name='${ALIAS_NAME}';")
+      if [ -n "${DIR}" ]; then
+        echo "${DIR}"
+      fi
+      exit
+    fi
     ;; 
 esac
-
 
 case $1 in
   -h | --help)
