@@ -8,18 +8,25 @@ nounderline=$(tput rmul)
 help_str="jump - around your filesystem
 
 ${bold}SYNOPSIS${normal}
-    jump [NAME] [option]
 
-    Calling jump with a single ${underline}NAME${nounderline} argument will be interpreted as an attempt to 
-    change directory using the ${underline}PATH${nounderline} assocaited with the ${underline}NAME${nounderline}.
+    jump to the directory associated with NAME
+    j NAME
+
+    Add a new alias for the current working directory
+    j -a [NAME]
+
+    Delete a saved alias NAME
+    j NAME -d
+
+    Rename a saved alias NAME to NEW_NAME
+    j NAME -r NEW_NAME
 
 ${bold}OPTIONS${normal}
     -h (--help)
         Display this help message and exit.
-    -a (--add) [${underline}PATH${nounderline}]
-        Associate the ${underline}NAME${nounderline} with the ${underline}PATH${nounderline}. If no ${underline}PATH${nounderline} is provided then the path to 
-        the current working directory will be used. If no ${underline}NAME${nounderline} is provided then the
-        current working directory is used.
+    -a (--add) [${underline}NAME${nounderline}]
+        Associate the ${underline}NAME${nounderline} with the current working directory. If no ${underline}NAME${nounderline} is provided then the
+        name of the current working directory is used.
     -r (--rename) ${underline}NEW_NAME${nounderline}
         Rename the alias ${underline}NAME${nounderline} to ${underline}NEW_NAME${nounderline}.
     -l (--list-names)
@@ -147,13 +154,8 @@ case $1 in
     sqlite3 -column "${SQLITE_DB}" "UPDATE aliases SET name='${NEW_ALIAS_NAME}' WHERE name='${ALIAS_NAME}';"
     ;;
   -a | --add)
-    ALIAS_NAME=${ALIAS_NAME:-$(basename "$(pwd)")}
-    ALIAS_DIR=${2:-$(pwd)}
-    if [ ! -d "$ALIAS_DIR" ]; then
-      # display help string and exit
-      echo "$help_str"
-      exit
-    fi
+    ALIAS_NAME=${2:-$(basename "$(pwd)")}
+    ALIAS_DIR=$(pwd)
     sqlite3 "${SQLITE_DB}" "INSERT INTO aliases VALUES ('${ALIAS_NAME}', '${ALIAS_DIR}');"
     echo "Added alias name '${ALIAS_NAME}' for path '${ALIAS_DIR}'"
     ;;
