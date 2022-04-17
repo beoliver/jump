@@ -49,6 +49,7 @@ help_and_exit () {
 }
 
 _path_to_script="$(cd "$(dirname "$0")" || exit; pwd -P)/$(basename "$0")"
+
 j_command_str="# The following function can be pasted into your shell profile.
 # calling the 'j' command with a single alias name is equivalent to calling
 # 'cd' on the path asociated with the alias.
@@ -100,7 +101,7 @@ fi
 
 # -----------------------------------------------------------------------------
 
-if [ "${#}" -eq 0 ]; then
+if [ ${#} -eq 0 ]; then
   # input has length 0
   # this indiecates that it is a `jump` command.
   # we are friendly and list all stored alias/path pairs
@@ -108,13 +109,13 @@ if [ "${#}" -eq 0 ]; then
   exit
 fi
 
-case "$1" in
+case $1 in
   -*) # argument is a flag... 
     ;;
   *)
     NAME=$1
     shift
-    if [ "${#}" -eq 0 ]; then 
+    if [ ${#} -eq 0 ]; then 
       DIR=$(sqlite3 -list "${DB}" "SELECT path FROM aliases WHERE name='${NAME}';")
       if [ -n "${DIR}" ]; then
         echo "${DIR}"
