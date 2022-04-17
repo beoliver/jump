@@ -111,21 +111,17 @@ if [ ${#} -eq 0 ]; then
   exit
 fi
 
-case $1 in
-  -*) # argument is a flag... 
-    ;;
-  *)
-    NAME=$1
-    shift
-    if [ ${#} -eq 0 ]; then 
-      DIR=$(sqlite3 -list "${DB}" "SELECT path FROM aliases WHERE name='${NAME}';")
-      if [ -n "${DIR}" ]; then
-        echo "${DIR}"
-      fi
-      exit
+if case $1 in -*) false;; *) true;; esac; then
+  NAME=$1
+  shift
+  if [ ${#} -eq 0 ]; then 
+    DIR=$(sqlite3 -list "${DB}" "SELECT path FROM aliases WHERE name='${NAME}';")
+    if [ -n "${DIR}" ]; then
+      echo "${DIR}"
     fi
-    ;; 
-esac
+    exit
+  fi
+fi
 
 case $1 in
   -h | --help)
