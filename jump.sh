@@ -95,10 +95,8 @@ if [ ! -d "$JUMP_CONFIG_DIR" ]; then
     sqlite3 -line "${DB}" \
       "CREATE TABLE aliases(name TEXT NOT NULL PRIMARY KEY, path TEXT NOT NULL);"
     echo "$j_command_str"
-    exit
-  else
-    exit
   fi
+  exit
 fi
 
 # -----------------------------------------------------------------------------
