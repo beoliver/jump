@@ -7,7 +7,7 @@ normal=$(tput sgr0)
 underline=$(tput smul)
 nounderline=$(tput rmul)
 
-help_str="jump - around your filesystem
+help_str="j(ump) around your filesystem
 
 ${bold}SYNOPSIS${normal}
 
@@ -85,7 +85,6 @@ JUMP_CONFIG_DIR="$HOME/.config/jump"
 DB="$JUMP_CONFIG_DIR/jump.db"
 
 # -----------------------------------------------------------------------------
-# check that JUMP_CONFIG_DIR exists
 
 if [ ! -d "$JUMP_CONFIG_DIR" ]; then
   echo "Create '$JUMP_CONFIG_DIR' [y/N]"
@@ -122,27 +121,20 @@ if case $1 in -*) false;; *) true;; esac; then
 fi
 
 case $1 in
-  -h | --help)
-    help_and_exit
+  -a | --add)
+    if [ -n "$NAME" ]; then
+      help_and_exit
+    fi
+    DIR=$(pwd)
+    NAME=${2:-$(basename "$DIR")}  
+    sqlite3 "${DB}" "INSERT INTO aliases VALUES ('${NAME}', '${DIR}');"
+    echo "Added alias name '${NAME}' for path '${DIR}'"
     ;;
-  -l | --list-names)
-    sqlite3 -column "${DB}" "SELECT name FROM aliases;"
-    ;;
-  -g | --generate)
-    echo "$j_command_str"
-    ;;      
   -d | --delete)
     if [ -z "$NAME" ]; then
       help_and_exit
     fi  
     sqlite3 -column "${DB}" "DELETE FROM aliases WHERE name='${NAME}';"
-    ;;
-  -p | --purge)
-    sqlite3 -column "${DB}" "SELECT path FROM aliases;" | while read -r path ; do
-      if [ ! -d "$path" ]; then
-        sqlite3 "${DB}" "DELETE FROM aliases WHERE path='${path}';"
-      fi
-    done
     ;;
   -r | --rename)
     if [ -z "$NAME" ]; then
@@ -155,18 +147,23 @@ case $1 in
     sqlite3 -column "${DB}" \
       "UPDATE aliases SET name='${NEW_NAME}' WHERE name='${NAME}';"
     ;;
-  -a | --add)
-    if [ -n "$NAME" ]; then
-      help_and_exit
-    fi
-    DIR=$(pwd)
-    NAME=${2:-$(basename "$DIR")}  
-    sqlite3 "${DB}" "INSERT INTO aliases VALUES ('${NAME}', '${DIR}');"
-    echo "Added alias name '${NAME}' for path '${DIR}'"
+  -p | --purge)
+    sqlite3 -column "${DB}" "SELECT path FROM aliases;" | while read -r path ; do
+      if [ ! -d "$path" ]; then
+        sqlite3 "${DB}" "DELETE FROM aliases WHERE path='${path}';"
+      fi
+    done
+    ;;
+  -l | --list-names)
+    sqlite3 -column "${DB}" "SELECT name FROM aliases;"
+    ;;
+  -g | --generate)
+    echo "$j_command_str"
+    ;;
+  -h | --help)
+    help_and_exit
     ;;
   *)
     help_and_exit
     ;;
 esac
-
-exit
