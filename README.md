@@ -1,28 +1,29 @@
 # jump
 
-**jump** around your filesystem.
+**j**(ump) around your filesystem.
 
-`jump` lets you associate directory paths with names. You can then use these names to quickly change directory. The `jump` command (`j`) is similar to adding aliases to you `.bash_profile`/`.zshrc` files.
+This is a simple program (it's just a shell script) that lets you associate directory paths with memorable names. You can then use these names to quickly change directory.
 
-```sh
-alias name="cd ${PATH_TO_DIR}"
+Add an alias using the `-a` flag.
 ```
-
-Unlike using the `alias` keyword in your bash/zsh profile, `jump` lets you avoid having to source you profile after adding an alias. It is also possible to use alias names that you otherwise conflict with existing applications.
+j -a <alias>
+```
+Type the alias to change directory. 
+```
+j <alias>
+```
 
 # installation
 
 1. Download the `jump.sh` script.
 2. Run the command `jump.sh`.
 
-This will (if the user consents) create a directory `$HOME/.config/jump` that will contain a sqlite database file `jump.db`.
+This will create a directory `$HOME/.config/jump` that will contain a sqlite database file used to store the aliases and paths.
 
-A function will be printed to stdout that can be pasted into your `.bash_profile`/`.zshrc` file.
-
-
+A function will be printed to stdout that can be pasted into your `.bash_profile` or similar.
 
 ```
-$ ./jump
+$ ./jump.sh
 Create '/Users/beoliver/.config/jump' [y/N]
 y
 # The following function can be pasted into your shell profile.
@@ -30,8 +31,8 @@ y
 # 'cd' on the path asociated with the alias.
 
 j () {
-  _jump_result="$(/Users/beoliver/dev/beoliver/jump/jump "${@}")"
-  if [ "${#}" -eq 1 ]; then
+  _jump_result="$(/Users/beoliver/dev/beoliver/jump/jump.sh ${@})"
+  if [ ${#} -eq 1 ]; then
     if case ${1} in -*) false;; *) true;; esac; then
       cd "$_jump_result" && return
     fi
@@ -43,7 +44,7 @@ _jump_completions() {
   COMPREPLY=()
   local word="${COMP_WORDS[COMP_CWORD]}"
   if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=($(compgen -W "$(/Users/beoliver/dev/beoliver/jump/jump --list-names)" -- "$word"))
+    COMPREPLY=($(compgen -W "$(/Users/beoliver/dev/beoliver/jump/jump.sh --list-names)" -- "$word"))
   fi
 }
 
