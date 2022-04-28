@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -122,9 +122,6 @@ fi
 
 case $1 in
   -a | --add)
-    if [ -n "$NAME" ]; then
-      help_and_exit
-    fi
     DIR=$(pwd)
     NAME=${2:-$(basename "$DIR")}  
     sqlite3 "${DB}" "INSERT INTO aliases VALUES ('${NAME}', '${DIR}');"
@@ -167,3 +164,5 @@ case $1 in
     help_and_exit
     ;;
 esac
+
+exit 
