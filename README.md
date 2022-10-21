@@ -2,11 +2,15 @@
 
 **j**(ump) around your filesystem.
 
+```
+j [NAME] [OPTION] ...
+```
+
 This is a simple program (it's just a shell script) that lets you associate directory paths with memorable names. You can then use these names to quickly change directory.
 
 Add an alias using the `-a` flag.
 ```
-j -a <alias>
+j <alias> -a
 ```
 Type the alias to change directory. 
 ```
@@ -31,7 +35,7 @@ y
 # 'cd' on the path asociated with the alias.
 
 j () {
-  _jump_result="$(/Users/beoliver/dev/beoliver/jump/jump.sh ${@})"
+  _jump_result="$(/Users/beoliver/jump.sh ${@})"
   if [ ${#} -eq 1 ]; then
     if case ${1} in -*) false;; *) true;; esac; then
       cd "$_jump_result" && return
@@ -44,7 +48,7 @@ _jump_completions() {
   COMPREPLY=()
   local word="${COMP_WORDS[COMP_CWORD]}"
   if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=($(compgen -W "$(/Users/beoliver/dev/beoliver/jump/jump.sh --list-names)" -- "$word"))
+    COMPREPLY=($(compgen -W "$(/Users/beoliver/jump.sh)" -- "$word"))
   fi
 }
 
