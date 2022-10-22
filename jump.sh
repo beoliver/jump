@@ -145,7 +145,7 @@ case $1 in
     sqlite3 -column "${jump_db}" "DELETE FROM aliases WHERE name='${alias_name}';"
     ;;
   -r | --rename)
-    if [ -z "${alias_path}" ]; then
+    if [ -z "${alias_name}" ]; then
       help_and_exit
     fi
     new_alias_name=$2
